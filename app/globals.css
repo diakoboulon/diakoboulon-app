@@ -125,3 +125,163 @@ footer { border-top: 1px solid var(--ligne); padding: 30px 0 40px; color: var(--
 .login-signup a { color: var(--terre-fonce); font-weight: 600; }
 .login-back { display: block; background: #F3F6FA; border-radius: 12px; padding: 12px; font-size: 13.5px; font-weight: 600; color: var(--encre); }
 .login-footer { margin-top: 18px; font-size: 12px; color: var(--encre-soft); text-align: center; }
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes bounceBadge {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.35); }
+  60% { transform: scale(0.92); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Base: everything interactive gets a smooth default transition */
+a, button, .btn, .card, .cat-pill, .add-btn, input, textarea {
+  transition: all 0.2s ease;
+}
+
+/* Hero: title + subtitle + CTA fade up in sequence */
+.hero-anim-title { animation: fadeUp 0.6s ease both; }
+.hero-anim-sub { animation: fadeUp 0.6s ease 0.1s both; }
+.hero-anim-cta { animation: fadeUp 0.6s ease 0.2s both; }
+
+/* Category pills: gentle pop + nicer active state transition */
+.cat-pill {
+  transform: scale(1);
+}
+.cat-pill:hover {
+  transform: translateY(-2px);
+  border-color: var(--terre);
+  color: var(--terre-fonce);
+}
+.cat-pill.active {
+  transform: scale(1.04);
+}
+
+/* Product grid: cards fade+rise in, staggered by column position */
+.grid .card {
+  animation: fadeUp 0.5s ease both;
+}
+.grid .card:nth-child(4n+1) { animation-delay: 0.02s; }
+.grid .card:nth-child(4n+2) { animation-delay: 0.08s; }
+.grid .card:nth-child(4n+3) { animation-delay: 0.14s; }
+.grid .card:nth-child(4n+4) { animation-delay: 0.2s; }
+
+.card {
+  transform: translateY(0);
+  box-shadow: 0 0 0 rgba(42,28,18,0);
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(42,28,18,.14);
+}
+.card .motif {
+  overflow: hidden;
+  transition: transform 0.5s ease;
+}
+.card:hover .motif {
+  transform: scale(1.06);
+}
+
+/* Buttons: lift + shadow on hover, gentle press-down on click */
+.btn-primary, .add-btn, .full-btn, .login-btn {
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover, .full-btn:hover, .login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(190,90,42,.25);
+}
+.btn-primary:active, .add-btn:active, .full-btn:active, .login-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+.add-btn:hover {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 6px 14px rgba(42,28,18,.25);
+}
+.btn-ghost:hover {
+  transform: translateY(-2px);
+}
+
+/* Cart badge: bounce whenever the count updates */
+.badge {
+  animation: bounceBadge 0.4s ease;
+}
+
+/* Header logo: subtle float, feels alive without being distracting */
+.logo-img {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+/* Links with underline-grow effect */
+.card-name, .login-signup a, .login-link {
+  position: relative;
+}
+
+/* Star ratings: gentle glow pop on hover of the whole card */
+.card:hover .stars {
+  color: var(--ocre);
+  filter: drop-shadow(0 0 2px rgba(209,164,52,.5));
+}
+
+/* Login / inscription card: pop in on load */
+.login-card {
+  animation: popIn 0.5s cubic-bezier(.2,.8,.2,1) both;
+}
+.login-brand {
+  animation: fadeUp 0.5s ease both;
+}
+
+/* Page transitions: fade the whole app container in */
+.app {
+  animation: fadeIn 0.4s ease both;
+}
+
+/* Section headers slide in from the left slightly */
+.sec-head {
+  animation: fadeUp 0.5s ease both;
+}
+
+/* Vendor cards & steps: gentle rise on scroll-in (see IntersectionObserver hook) */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* "Ajouté" confirmation state on the add-to-cart button */
+.add-btn.just-added {
+  background: #3F7D4F;
+  animation: popIn 0.3s ease;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

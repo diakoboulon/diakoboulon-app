@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 
 export default function SellerPage() {
   const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({ boutique: "", ville: "", telephone: "", description: "" });
+  const [form, setForm] = useState({ boutique: "", ville: "", telephone: "", email: "", description: "" });
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -32,6 +32,8 @@ export default function SellerPage() {
               value={form.ville} onChange={(e) => setForm({ ...form, ville: e.target.value })} />
             <input className="field" placeholder="Numéro Mobile Money" required
               value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+            <input className="field" type="email" placeholder="Adresse email" required
+              value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <textarea className="field" placeholder="Décrivez vos produits" rows={4}
               value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             <button className="btn btn-primary" type="submit">Envoyer ma demande</button>

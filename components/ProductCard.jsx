@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useCart } from "./CartProvider";
 
 export function formatFcfa(n) {
@@ -9,6 +10,13 @@ export function formatFcfa(n) {
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const [justAdded, setJustAdded] = useState(false);
+
+  function handleAdd() {
+    addToCart(product.id);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 900);
+  }
 
   return (
     <div className="card">
@@ -26,8 +34,8 @@ export default function ProductCard({ product }) {
         <div className="stars">★★★★★ {product.rating}</div>
         <div className="card-foot">
           <span className="card-price">{formatFcfa(product.price)}</span>
-          <button className="add-btn" onClick={() => addToCart(product.id)}>
-            Ajouter
+          <button className={"add-btn" + (justAdded ? " just-added" : "")} onClick={handleAdd}>
+            {justAdded ? "✓ Ajouté" : "Ajouter"}
           </button>
         </div>
       </div>

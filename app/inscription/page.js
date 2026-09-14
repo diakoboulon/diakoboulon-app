@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default function InscriptionPage() {
   const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({ nom: "", telephone: "", motdepasse: "" });
+  const [form, setForm] = useState({ nom: "", telephone: "", email: "", motdepasse: "" });
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -45,6 +45,13 @@ export default function InscriptionPage() {
                 <span>📱</span>
                 <input type="tel" placeholder="+223 ..." required
                   value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+              </div>
+
+              <label className="login-label" style={{ marginTop: 16 }}>Adresse email</label>
+              <div className="login-field">
+                <span>✉️</span>
+                <input type="email" placeholder="vous@exemple.com" required
+                  value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </div>
 
               <label className="login-label" style={{ marginTop: 16 }}>Mot de passe</label>

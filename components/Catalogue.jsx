@@ -35,14 +35,14 @@ export default function Catalogue({ products }) {
       <Header search={search} onSearch={setSearch} />
       <div className="app">
         <section style={{ padding: "36px 0 20px" }}>
-          <h1 style={{ fontSize: 34, lineHeight: 1.1, margin: "0 0 12px", fontWeight: 600 }}>
+          <h1 className="hero-anim-title" style={{ fontSize: 34, lineHeight: 1.1, margin: "0 0 12px", fontWeight: 600 }}>
             Le marché malien,<br />à portée de main.
           </h1>
-          <p style={{ color: "var(--encre-soft)", maxWidth: "48ch", margin: "0 0 18px" }}>
+          <p className="hero-anim-sub" style={{ color: "var(--encre-soft)", maxWidth: "48ch", margin: "0 0 18px" }}>
             Diakoboulon connecte les entreprises et artisans du Mali directement aux acheteurs,
             à Bamako comme dans la diaspora.
           </p>
-          <Link href="/vendre" className="btn btn-primary">Vendre sur Diakoboulon</Link>
+          <Link href="/vendre" className="btn btn-primary hero-anim-cta">Vendre sur Diakoboulon</Link>
         </section>
 
         <div className="cats">
