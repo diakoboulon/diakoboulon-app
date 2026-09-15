@@ -11,15 +11,9 @@
   --encre-soft: #5A4A3B;
   --ligne: #E1D2B4;
   --radius: 14px;
-  --or: #D9A400;
-  --or-fonce: #B58600;
-  --vert: #063F35;
-  --vert-fonce: #032b24;
-  --rouge: #E03A3A;
 }
 * { box-sizing: border-box; }
 html, body { background: var(--sable); color: var(--encre); font-family: 'Archivo', sans-serif; margin: 0; padding: 0; }
-body { padding-bottom: 64px; }
 h1, h2, h3 { font-family: 'Fraunces', serif; }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }
@@ -55,8 +49,8 @@ header { position: sticky; top: 0; z-index: 40; background: rgba(242,232,213,.94
 .badge { position: absolute; top: -2px; right: -2px; background: var(--terre); color: #fff; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
 
 .btn { border-radius: 999px; padding: 12px 22px; font-weight: 600; font-size: 14.5px; border: 1px solid transparent; display: inline-block; }
-.btn-primary { background: var(--or); color: var(--encre); }
-.btn-primary:hover { background: var(--or-fonce); }
+.btn-primary { background: var(--terre); color: #fff; }
+.btn-primary:hover { background: var(--terre-fonce); }
 .btn-ghost { background: transparent; border-color: var(--encre); color: var(--encre); }
 .btn-ghost:hover { background: var(--encre); color: var(--sable); }
 
@@ -123,7 +117,7 @@ footer { border-top: 1px solid var(--ligne); padding: 30px 0 40px; color: var(--
 .login-row { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 20px; font-size: 13px; }
 .login-remember { display: flex; align-items: center; gap: 6px; color: var(--encre-soft); }
 .login-link { color: var(--indigo); font-weight: 600; }
-.login-btn { width: 100%; border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 15px; color: var(--encre); background: linear-gradient(135deg, var(--or), var(--or-fonce)); box-shadow: 0 8px 18px rgba(181,134,0,.28); }
+.login-btn { width: 100%; border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 15px; color: #fff; background: linear-gradient(135deg, var(--ocre), var(--terre)); box-shadow: 0 8px 18px rgba(190,90,42,.28); }
 .login-btn:hover { filter: brightness(1.05); }
 .login-divider { display: flex; align-items: center; gap: 10px; margin: 22px 0 16px; color: var(--encre-soft); font-size: 12.5px; }
 .login-divider::before, .login-divider::after { content: ""; flex: 1; height: 1px; background: var(--ligne); }
@@ -292,77 +286,9 @@ a, button, .btn, .card, .cat-pill, .add-btn, input, textarea {
   }
 }
 
-/* ================= NOUVEAU DESIGN : header enrichi ================= */
-.header-row { position: relative; }
-.menu-btn { order: -1; }
-.header-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
-.logo-link { gap: 10px; }
-.brand-text { font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px; color: var(--encre); line-height: 1.15; display: flex; flex-direction: column; }
-.brand-text span { color: var(--or-fonce); }
-.brand-text small { font-family: 'Archivo', sans-serif; font-weight: 500; font-size: 10.5px; color: var(--encre-soft); }
-.notif-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 999px; background: var(--rouge); border: 1.5px solid var(--carte); }
-.icon-btn { position: relative; }
-
-.mobile-menu { position: absolute; top: 100%; left: 0; right: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--ligne); box-shadow: 0 10px 20px rgba(42,28,18,.08); display: flex; flex-direction: column; padding: 6px 0; animation: fadeUp .25s ease both; }
-.mobile-menu-link { padding: 12px 18px; font-weight: 600; font-size: 14.5px; color: var(--encre); }
-.mobile-menu-link:hover { background: var(--sable); }
-
-.searchbar { margin: 12px 0 18px; }
-
-/* Bannière promotionnelle (or/moutarde) */
-.banner-promo {
-  background: linear-gradient(120deg, var(--or) 0%, var(--or-fonce) 100%);
-  border-radius: 18px;
-  padding: 26px 22px;
-  margin-bottom: 22px;
-  position: relative;
-  overflow: hidden;
-}
-.banner-promo::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 85% 20%, rgba(255,255,255,.25) 0, transparent 45%),
-              radial-gradient(circle at 95% 90%, rgba(255,255,255,.18) 0, transparent 40%);
-}
-.banner-promo-content { position: relative; z-index: 1; max-width: 300px; }
-.banner-promo h2 { color: #fff; font-size: 21px; line-height: 1.3; margin: 0 0 16px; font-weight: 700; }
-.banner-btn { display: inline-block; background: #fff; color: var(--or-fonce); font-weight: 700; font-size: 13.5px; padding: 10px 22px; border-radius: 999px; }
-.banner-btn:hover { background: var(--sable); }
-
-/* Catégories en icônes */
-.cat-grid { display: flex; justify-content: space-between; gap: 6px; overflow-x: auto; padding: 4px 0 26px; scroll-snap-type: x proximity; }
-.cat-icon-item { flex: 0 0 auto; width: 68px; display: flex; flex-direction: column; align-items: center; gap: 8px; background: none; border: none; scroll-snap-align: start; }
-.cat-icon-circle { width: 52px; height: 52px; border-radius: 16px; background: var(--carte); border: 1px solid var(--ligne); display: flex; align-items: center; justify-content: center; color: var(--encre); }
-.cat-icon-item.active .cat-icon-circle { background: var(--encre); color: var(--or); border-color: var(--encre); }
-.cat-icon-label { font-size: 11.5px; font-weight: 600; color: var(--encre); text-align: center; line-height: 1.15; }
-
-.seeall { background: none; border: none; color: var(--terre-fonce); font-weight: 600; font-size: 13px; padding: 0; }
-.seeall:hover { text-decoration: underline; }
-.rating-count { color: var(--encre-soft); font-weight: 500; }
-
-/* Carte produit : favoris + bouton panier rond */
-.card { position: relative; }
-.fav-btn { position: absolute; top: 8px; right: 8px; z-index: 2; width: 30px; height: 30px; border-radius: 999px; background: rgba(255,255,255,.9); border: none; display: flex; align-items: center; justify-content: center; color: var(--encre-soft); box-shadow: 0 2px 6px rgba(42,28,18,.15); }
-.fav-btn.active { color: var(--rouge); }
-.fav-btn:hover { transform: scale(1.08); }
-.add-btn-round { width: 34px; height: 34px; border-radius: 999px; background: var(--vert); color: #fff; border: none; display: flex; align-items: center; justify-content: center; }
-.add-btn-round:hover { background: var(--vert-fonce); transform: translateY(-1px); }
-.add-btn-round.just-added { background: var(--vert-fonce); animation: popIn 0.3s ease; }
-
-/* Bannière vendeur (vert foncé) */
-.sell-banner { background: linear-gradient(135deg, var(--vert), var(--vert-fonce)); border-radius: 18px; padding: 30px 24px; margin: 10px 0 30px; }
-.sell-banner-content h2 { color: #fff; font-size: 21px; line-height: 1.3; margin: 0 0 16px; font-weight: 700; }
-.sell-btn { display: inline-block; background: var(--or); color: var(--vert-fonce); font-weight: 700; font-size: 13.5px; padding: 11px 24px; border-radius: 999px; }
-.sell-btn:hover { background: #fff; }
-
-/* Navigation basse fixe */
-.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; background: #fff; border-top: 1px solid var(--ligne); display: flex; justify-content: space-around; padding: 8px 4px 10px; box-shadow: 0 -6px 16px rgba(42,28,18,.06); }
-.bn-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--encre-soft); font-size: 10.5px; font-weight: 600; padding: 4px 6px; min-width: 44px; }
-.bn-item.active { color: var(--or-fonce); }
-.bn-icon { position: relative; }
-.bn-badge { position: absolute; top: -6px; right: -8px; background: var(--rouge); color: #fff; font-size: 9px; font-weight: 700; border-radius: 999px; min-width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
-
-@media (max-width: 520px) {
-  .cat-grid { justify-content: flex-start; }
-  .banner-promo-content { max-width: 100%; }
+/* Hero visual panel + responsive collapse on mobile */
+.hero-visual-panel .motif { animation: fadeUp 0.7s ease both; }
+@media (max-width: 780px) {
+  section:has(.hero-visual-panel) { grid-template-columns: 1fr !important; }
+  .hero-visual-panel { display: none; }
 }

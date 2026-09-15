@@ -3,16 +3,46 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function ConnexionPage() {
+  const router = useRouter();
   const [remember, setRemember] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({ identifiant: "", motdepasse: "" });
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    // TODO: brancher sur votre système d'authentification réel
-    // (Supabase Auth, par exemple) une fois la base de données connectée.
-    alert("Connexion (démonstration) — à connecter à votre système d'authentification.");
+    setError("");
+
+    if (!supabase) {
+      alert("Connexion (démonstration) — Supabase n'est pas encore connecté.");
+      return;
+    }
+
+    setLoading(true);
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email: form.identifiant,
+      password: form.motdepasse,
+    });
+
+    if (authError) {
+      setLoading(false);
+      setError("Identifiant ou mot de passe incorrect.");
+      return;
+    }
+
+    // Le compte est-il une boutique vendeur ? Si oui, direction le tableau de bord.
+    const { data: vendor } = await supabase
+      .from("vendors")
+      .select("id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+
+    setLoading(false);
+    router.push(vendor ? "/vendeur/dashboard" : "/");
   }
 
   return (
@@ -33,13 +63,13 @@ export default function ConnexionPage() {
               <span>👤</span>
               <input
                 type="text"
-                placeholder="Nom d'utilisateur ou numéro de téléphone"
+                placeholder="Email (ou numéro pour les clients)"
                 value={form.identifiant}
                 onChange={(e) => setForm({ ...form, identifiant: e.target.value })}
                 required
               />
             </div>
-            <div className="login-hint">Personnel : nom d'utilisateur | Client : numéro de téléphone</div>
+            <div className="login-hint">Vendeur : email de votre boutique | Client : numéro de téléphone</div>
 
             <label className="login-label" style={{ marginTop: 16 }}>Mot de passe</label>
             <div className="login-field">
@@ -61,13 +91,20 @@ export default function ConnexionPage() {
               <a href="#" className="login-link">Mot de passe oublié ?</a>
             </div>
 
-            <button type="submit" className="login-btn">Se connecter</button>
+            {error && <p style={{ color: "var(--terre)", fontSize: 13, marginBottom: 12 }}>{error}</p>}
+
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading ? "Connexion..." : "Se connecter"}
+            </button>
           </form>
 
           <div className="login-divider"><span>Vous êtes client ?</span></div>
 
           <p className="login-signup">
             Pas encore de compte ? <Link href="/inscription">Créer un compte client</Link>
+          </p>
+          <p className="login-signup" style={{ marginTop: -8 }}>
+            Vous vendez sur Diakoboulon ? <Link href="/vendre">Ouvrir une boutique</Link>
           </p>
 
           <Link href="/" className="login-back">← Retour à l'accueil</Link>

@@ -3,64 +3,20 @@
 import { useMemo, useState } from "react";
 import Header from "./Header";
 import ProductCard from "./ProductCard";
+import { CATEGORY_LABELS } from "@/lib/data";
 import Link from "next/link";
 
 const CATS = [
-  {
-    id: "electronique",
-    label: "Électronique",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="5" y="2" width="14" height="20" rx="2" />
-        <line x1="12" y1="18" x2="12.01" y2="18" />
-      </svg>
-    ),
-  },
-  {
-    id: "mode",
-    label: "Mode",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M8 3 4 6l2 3-2 2v10h16V11l-2-2 2-3-4-3-2 2h-2Z" />
-      </svg>
-    ),
-  },
-  {
-    id: "maison",
-    label: "Maison",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 10.5 12 3l9 7.5" />
-        <path d="M5 9.5V21h14V9.5" />
-      </svg>
-    ),
-  },
-  {
-    id: "beaute",
-    label: "Beauté",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m12 2 2.2 5.8L20 10l-5.8 2.2L12 18l-2.2-5.8L4 10l5.8-2.2Z" />
-      </svg>
-    ),
-  },
-  {
-    id: "agroalimentaire",
-    label: "Agroalimentaire",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 11a8 8 0 0 1 16 0v0a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z" />
-        <path d="M12 3c0 3-2 3-2 6" />
-        <path d="M4 20h16" />
-      </svg>
-    ),
-  },
+  { id: "tous", label: "Tous les produits" },
+  { id: "alimentaire", label: "Alimentaire" },
+  { id: "beaute", label: "Beauté & bien-être" },
+  { id: "textile", label: "Mode & textile" },
+  { id: "artisanat", label: "Artisanat & déco" },
 ];
 
 export default function Catalogue({ products }) {
   const [cat, setCat] = useState("tous");
   const [search, setSearch] = useState("");
-  const [showAll, setShowAll] = useState(false);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -74,66 +30,55 @@ export default function Catalogue({ products }) {
     );
   }, [products, cat, search]);
 
-  const popular = useMemo(
-    () => [...products].sort((a, b) => b.rating - a.rating).slice(0, 4),
-    [products]
-  );
-  const isFiltering = cat !== "tous" || search.trim() !== "";
-  const displayed = isFiltering || showAll ? filtered : popular;
-
   return (
     <>
       <Header search={search} onSearch={setSearch} />
-      <div className="app" style={{ paddingBottom: 90 }}>
-        <div className="banner-promo">
-          <div className="banner-promo-content">
-            <h2>
-              Des milliers de produits<br />
-              Des vendeurs fiables<br />
-              Une seule plateforme
-            </h2>
-            <a href="#categories" className="banner-btn">Découvrir</a>
+      <div className="app">
+        <section className="hero-flex" style={{ padding: "36px 0 20px", display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 30, alignItems: "center" }}>
+          <div>
+            <h1 className="hero-anim-title" style={{ fontSize: 34, lineHeight: 1.1, margin: "0 0 12px", fontWeight: 600 }}>
+              Le marché malien,<br />à portée de main.
+            </h1>
+            <p className="hero-anim-sub" style={{ color: "var(--encre-soft)", maxWidth: "48ch", margin: "0 0 18px" }}>
+              Diakoboulon connecte les entreprises et artisans du Mali directement aux acheteurs,
+              à Bamako comme dans la diaspora.
+            </p>
+            <Link href="/vendre" className="btn btn-primary hero-anim-cta">Vendre sur Diakoboulon</Link>
+            <div className="hero-anim-cta" style={{ display: "flex", gap: 18, marginTop: 22, fontSize: 12.5, color: "var(--encre-soft)" }}>
+              <span>🔒 Paiement sécurisé</span>
+              <span>🇲🇱 Vendeurs vérifiés</span>
+              <span>🚚 Livraison locale</span>
+            </div>
           </div>
-        </div>
+          <div className="hero-visual-panel">
+            <div className="motif" style={{ "--m1": "#D19A34", borderRadius: 20, aspectRatio: "5/4" }} />
+          </div>
+        </section>
 
-        <div id="categories" className="cat-grid">
+        <div className="cats">
           {CATS.map((c) => (
             <button
               key={c.id}
-              className={"cat-icon-item" + (cat === c.id ? " active" : "")}
-              onClick={() => setCat(cat === c.id ? "tous" : c.id)}
+              className={"cat-pill" + (cat === c.id ? " active" : "")}
+              onClick={() => setCat(c.id)}
             >
-              <span className="cat-icon-circle">{c.icon}</span>
-              <span className="cat-icon-label">{c.label}</span>
+              {c.label}
             </button>
           ))}
         </div>
 
         <div className="sec-head">
-          <h2>{isFiltering ? "Résultats" : showAll ? "Tous les produits" : "Produits populaires"}</h2>
-          {isFiltering ? (
-            <span className="sub">{filtered.length} produit(s)</span>
-          ) : !showAll ? (
-            <button className="seeall" onClick={() => setShowAll(true)}>Voir tout</button>
-          ) : (
-            <span className="sub">{filtered.length} produit(s)</span>
-          )}
+          <h2>Produits</h2>
+          <span className="sub">{filtered.length} produit(s)</span>
         </div>
         <div className="grid">
-          {displayed.map((p) => (
+          {filtered.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
-
-        <div className="sell-banner">
-          <div className="sell-banner-content">
-            <h2>Vendez facilement<br />Développez votre boutique</h2>
-            <Link href="/vendre" className="sell-btn">Devenir vendeur</Link>
-          </div>
-        </div>
       </div>
 
-      <footer style={{ paddingBottom: 90 }}>
+      <footer>
         <div className="app">
           <div className="pay-methods">
             <span className="pay-chip">Orange Money</span>
