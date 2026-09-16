@@ -1,5 +1,7 @@
 import "./globals.css";
 import { CartProvider } from "@/components/CartProvider";
+import { FavoritesProvider } from "@/components/FavoritesProvider";
+import BottomNav from "@/components/BottomNav";
 
 export const metadata = {
   title: "Diakoboulon — Le marché malien",
@@ -10,7 +12,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body>
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <FavoritesProvider>
+            {children}
+            <BottomNav />
+          </FavoritesProvider>
+        </CartProvider>
       </body>
     </html>
   );

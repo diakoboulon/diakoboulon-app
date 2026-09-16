@@ -36,7 +36,7 @@ export default function ProductDetail({ product }) {
             <div style={{ fontFamily: "'Fraunces', serif", fontSize: 26, color: "var(--terre-fonce)", fontWeight: 600 }}>
               {formatFcfa(product.price)}
             </div>
-            <p style={{ color: "var(--encre-soft)", lineHeight: 1.6 }}>{product.desc}</p>
+            <p style={{ color: "var(--encre-soft)", lineHeight: 1.6 }}>{product.desc || product.description}</p>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <button className="add-btn" style={{ borderRadius: "50%", width: 28, height: 28 }} onClick={() => setQty((q) => Math.max(1, q - 1))}>−</button>
               <span>{qty}</span>

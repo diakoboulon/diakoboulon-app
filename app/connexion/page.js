@@ -4,45 +4,35 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { signIn } from "@/lib/auth";
 
 export default function ConnexionPage() {
   const router = useRouter();
   const [remember, setRemember] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [form, setForm] = useState({ identifiant: "", motdepasse: "" });
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
-
-    if (!supabase) {
-      alert("Connexion (démonstration) — Supabase n'est pas encore connecté.");
-      return;
-    }
-
+    setErrorMsg("");
     setLoading(true);
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: form.identifiant,
-      password: form.motdepasse,
-    });
-
-    if (authError) {
+    try {
+      const { profile } = await signIn({ identifiant: form.identifiant, password: form.motdepasse });
+      if (profile?.role === "vendeur") {
+        router.push("/vendre/tableau-de-bord");
+      } else {
+        router.push("/");
+      }
+    } catch (err) {
+      if (err.message?.includes("Invalid login")) {
+        setErrorMsg("Identifiant ou mot de passe incorrect.");
+      } else {
+        setErrorMsg(err.message || "Une erreur est survenue, réessayez.");
+      }
+    } finally {
       setLoading(false);
-      setError("Identifiant ou mot de passe incorrect.");
-      return;
     }
-
-    // Le compte est-il une boutique vendeur ? Si oui, direction le tableau de bord.
-    const { data: vendor } = await supabase
-      .from("vendors")
-      .select("id")
-      .eq("user_id", data.user.id)
-      .maybeSingle();
-
-    setLoading(false);
-    router.push(vendor ? "/vendeur/dashboard" : "/");
   }
 
   return (
@@ -63,13 +53,13 @@ export default function ConnexionPage() {
               <span>👤</span>
               <input
                 type="text"
-                placeholder="Email (ou numéro pour les clients)"
+                placeholder="Nom d'utilisateur ou numéro de téléphone"
                 value={form.identifiant}
                 onChange={(e) => setForm({ ...form, identifiant: e.target.value })}
                 required
               />
             </div>
-            <div className="login-hint">Vendeur : email de votre boutique | Client : numéro de téléphone</div>
+            <div className="login-hint">Personnel : nom d'utilisateur | Client : numéro de téléphone</div>
 
             <label className="login-label" style={{ marginTop: 16 }}>Mot de passe</label>
             <div className="login-field">
@@ -83,6 +73,10 @@ export default function ConnexionPage() {
               />
             </div>
 
+            {errorMsg && (
+              <div style={{ color: "#B3261E", fontSize: 13.5, marginTop: 10 }}>{errorMsg}</div>
+            )}
+
             <div className="login-row">
               <label className="login-remember">
                 <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
@@ -91,10 +85,8 @@ export default function ConnexionPage() {
               <a href="#" className="login-link">Mot de passe oublié ?</a>
             </div>
 
-            {error && <p style={{ color: "var(--terre)", fontSize: 13, marginBottom: 12 }}>{error}</p>}
-
             <button type="submit" className="login-btn" disabled={loading}>
-              {loading ? "Connexion..." : "Se connecter"}
+              {loading ? "Connexion…" : "Se connecter"}
             </button>
           </form>
 
@@ -103,8 +95,8 @@ export default function ConnexionPage() {
           <p className="login-signup">
             Pas encore de compte ? <Link href="/inscription">Créer un compte client</Link>
           </p>
-          <p className="login-signup" style={{ marginTop: -8 }}>
-            Vous vendez sur Diakoboulon ? <Link href="/vendre">Ouvrir une boutique</Link>
+          <p className="login-signup" style={{ marginTop: 6 }}>
+            Vous êtes vendeur ? <Link href="/vendre">Ouvrir ma boutique</Link>
           </p>
 
           <Link href="/" className="login-back">← Retour à l'accueil</Link>
