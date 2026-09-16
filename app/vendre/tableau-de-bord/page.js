@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import ProductThumb from "@/components/ProductThumb";
 import { formatFcfa } from "@/components/ProductCard";
 import { getCurrentProfile, getMyVendorProfile, signOut } from "@/lib/auth";
-import { addProduct, getVendorProducts, deleteProduct } from "@/lib/products";
+import { addProduct, getVendorProducts, deleteProduct, MAX_IMAGES } from "@/lib/products";
 import { CATEGORY_LABELS } from "@/lib/data";
 
 const CAT_OPTIONS = Object.entries(CATEGORY_LABELS);
@@ -19,8 +19,8 @@ export default function TableauDeBordVendeur() {
   const [products, setProducts] = useState([]);
 
   const [form, setForm] = useState({ name: "", cat: CAT_OPTIONS[0][0], price: "", description: "" });
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -45,9 +45,14 @@ export default function TableauDeBordVendeur() {
   }, [router]);
 
   function handleImageChange(e) {
-    const file = e.target.files?.[0];
-    setImageFile(file || null);
-    setImagePreview(file ? URL.createObjectURL(file) : null);
+    const files = Array.from(e.target.files || []).slice(0, MAX_IMAGES);
+    if (e.target.files.length > MAX_IMAGES) {
+      setErrorMsg(`Vous ne pouvez ajouter que ${MAX_IMAGES} photos maximum, les premières ont été gardées.`);
+    } else {
+      setErrorMsg("");
+    }
+    setImageFiles(files);
+    setImagePreviews(files.map((f) => URL.createObjectURL(f)));
   }
 
   async function handleAddProduct(e) {
@@ -64,11 +69,11 @@ export default function TableauDeBordVendeur() {
         name: form.name,
         price: form.price,
         description: form.description,
-        imageFile,
+        imageFiles,
       });
       setForm({ name: "", cat: CAT_OPTIONS[0][0], price: "", description: "" });
-      setImageFile(null);
-      setImagePreview(null);
+      setImageFiles([]);
+      setImagePreviews([]);
       await loadProducts(vendor.id);
     } catch (err) {
       setErrorMsg(err.message || "Impossible d'ajouter ce produit, réessayez.");
@@ -138,11 +143,15 @@ export default function TableauDeBordVendeur() {
 
           <div>
             <label className="btn" style={{ border: "1px solid var(--ligne)", cursor: "pointer", display: "inline-block" }}>
-              📷 {imageFile ? "Changer la photo" : "Ajouter une photo"}
-              <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }} />
+              📷 {imageFiles.length ? `Changer les photos (${imageFiles.length}/${MAX_IMAGES})` : `Ajouter des photos (jusqu'à ${MAX_IMAGES})`}
+              <input type="file" accept="image/*" multiple onChange={handleImageChange} style={{ display: "none" }} />
             </label>
-            {imagePreview && (
-              <img src={imagePreview} alt="Aperçu" style={{ width: 70, height: 70, objectFit: "cover", borderRadius: 10, marginLeft: 12, verticalAlign: "middle" }} />
+            {imagePreviews.length > 0 && (
+              <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                {imagePreviews.map((src, i) => (
+                  <img key={i} src={src} alt="Aperçu" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 10 }} />
+                ))}
+              </div>
             )}
           </div>
 

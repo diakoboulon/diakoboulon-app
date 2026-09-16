@@ -10,6 +10,7 @@ import ProductThumb from "./ProductThumb";
 
 export default function ProductDetail({ product }) {
   const [qty, setQty] = useState(1);
+  const [activeImg, setActiveImg] = useState(0);
   const { addToCart } = useCart();
 
   if (!product) {
@@ -23,13 +24,37 @@ export default function ProductDetail({ product }) {
     );
   }
 
+  const gallery = product.images && product.images.length ? product.images : (product.image_url ? [product.image_url] : []);
+
   return (
     <>
       <Header />
       <div className="app" style={{ padding: "30px 0 60px" }}>
         <Link href="/" style={{ fontSize: 13, color: "var(--encre-soft)" }}>← Retour au catalogue</Link>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 30, marginTop: 16 }}>
-          <ProductThumb product={product} style={{ borderRadius: 18 }} />
+          <div>
+            {gallery.length > 0 ? (
+              <div className="motif" style={{ borderRadius: 18, backgroundImage: `url(${gallery[activeImg]})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+            ) : (
+              <ProductThumb product={product} style={{ borderRadius: 18 }} />
+            )}
+            {gallery.length > 1 && (
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                {gallery.map((src, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImg(i)}
+                    style={{
+                      width: 56, height: 56, borderRadius: 10, padding: 0, cursor: "pointer",
+                      border: i === activeImg ? "2px solid var(--or-fonce)" : "1px solid var(--ligne)",
+                      backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center",
+                    }}
+                    aria-label={`Photo ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ fontSize: 12.5, color: "var(--encre-soft)" }}>{product.vendor} · {product.city}</div>
             <h1 style={{ margin: 0, fontSize: 26 }}>{product.name}</h1>
