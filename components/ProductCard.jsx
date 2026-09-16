@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "./CartProvider";
 import { useFavorites } from "./FavoritesProvider";
+import ProductThumb from "./ProductThumb";
 
 export function formatFcfa(n) {
   return n.toLocaleString("fr-FR") + " FCFA";
@@ -24,7 +25,7 @@ export default function ProductCard({ product }) {
   return (
     <div className="card">
       <Link href={`/produit/${product.id}`}>
-        <div className="motif" style={{ "--m1": product.color }} />
+        <ProductThumb product={product} />
       </Link>
       <button
         className={"fav-btn" + (isFav ? " active" : "")}

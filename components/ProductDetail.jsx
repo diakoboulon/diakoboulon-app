@@ -6,6 +6,7 @@ import { useCart } from "./CartProvider";
 import { formatFcfa } from "./ProductCard";
 import { CATEGORY_LABELS } from "@/lib/data";
 import Link from "next/link";
+import ProductThumb from "./ProductThumb";
 
 export default function ProductDetail({ product }) {
   const [qty, setQty] = useState(1);
@@ -28,7 +29,7 @@ export default function ProductDetail({ product }) {
       <div className="app" style={{ padding: "30px 0 60px" }}>
         <Link href="/" style={{ fontSize: 13, color: "var(--encre-soft)" }}>← Retour au catalogue</Link>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 30, marginTop: 16 }}>
-          <div className="motif" style={{ "--m1": product.color, borderRadius: 18 }} />
+          <ProductThumb product={product} style={{ borderRadius: 18 }} />
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ fontSize: 12.5, color: "var(--encre-soft)" }}>{product.vendor} · {product.city}</div>
             <h1 style={{ margin: 0, fontSize: 26 }}>{product.name}</h1>
