@@ -119,6 +119,10 @@ footer { border-top: 1px solid var(--ligne); padding: 30px 0 40px; color: var(--
 .login-label { display: block; text-align: left; font-weight: 600; font-size: 13.5px; margin-bottom: 6px; color: var(--encre); }
 .login-field { display: flex; align-items: center; gap: 10px; background: #F3F6FA; border: 1px solid #E4E9EF; border-radius: 12px; padding: 12px 14px; }
 .login-field input { border: none; background: transparent; outline: none; width: 100%; font-size: 14.5px; color: var(--encre); }
+.pw-toggle { background: none; border: none; padding: 2px; margin: 0; color: var(--encre-soft); display: flex; align-items: center; flex-shrink: 0; cursor: pointer; }
+.pw-toggle:hover { color: var(--encre); }
+.pw-field-plain { display: flex; align-items: center; gap: 8px; }
+.pw-field-plain input { border: none; background: transparent; outline: none; width: 100%; font-family: inherit; font-size: inherit; color: inherit; padding: 0; }
 .login-hint { text-align: left; font-size: 11.5px; color: var(--encre-soft); margin-top: 5px; }
 .login-row { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 20px; font-size: 13px; }
 .login-remember { display: flex; align-items: center; gap: 6px; color: var(--encre-soft); }

@@ -4,16 +4,21 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signUpClient } from "@/lib/auth";
+import PasswordField from "@/components/PasswordField";
 
 export default function InscriptionPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [form, setForm] = useState({ nom: "", telephone: "", motdepasse: "" });
+  const [form, setForm] = useState({ nom: "", telephone: "", motdepasse: "", motdepasse2: "" });
 
   async function handleSubmit(e) {
     e.preventDefault();
     setErrorMsg("");
+    if (form.motdepasse !== form.motdepasse2) {
+      setErrorMsg("Les deux mots de passe ne sont pas identiques.");
+      return;
+    }
     setLoading(true);
     try {
       await signUpClient({ nom: form.nom, telephone: form.telephone, password: form.motdepasse });
@@ -63,11 +68,12 @@ export default function InscriptionPage() {
               <div className="login-hint">Ce numéro sera votre identifiant de connexion.</div>
 
               <label className="login-label" style={{ marginTop: 16 }}>Mot de passe</label>
-              <div className="login-field">
-                <span>🔒</span>
-                <input type="password" placeholder="••••••••••••" required minLength={6}
-                  value={form.motdepasse} onChange={(e) => setForm({ ...form, motdepasse: e.target.value })} />
-              </div>
+              <PasswordField required minLength={6}
+                value={form.motdepasse} onChange={(e) => setForm({ ...form, motdepasse: e.target.value })} />
+
+              <label className="login-label" style={{ marginTop: 16 }}>Confirmer le mot de passe</label>
+              <PasswordField required minLength={6}
+                value={form.motdepasse2} onChange={(e) => setForm({ ...form, motdepasse2: e.target.value })} />
 
               {errorMsg && (
                 <div style={{ color: "#B3261E", fontSize: 13.5, marginTop: 10 }}>{errorMsg}</div>

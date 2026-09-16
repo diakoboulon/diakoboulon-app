@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth";
+import PasswordField from "@/components/PasswordField";
 
 export default function ConnexionPage() {
   const router = useRouter();
@@ -62,16 +63,11 @@ export default function ConnexionPage() {
             <div className="login-hint">Personnel : nom d'utilisateur | Client : numéro de téléphone</div>
 
             <label className="login-label" style={{ marginTop: 16 }}>Mot de passe</label>
-            <div className="login-field">
-              <span>🔒</span>
-              <input
-                type="password"
-                placeholder="••••••••••••"
-                value={form.motdepasse}
-                onChange={(e) => setForm({ ...form, motdepasse: e.target.value })}
-                required
-              />
-            </div>
+            <PasswordField
+              value={form.motdepasse}
+              onChange={(e) => setForm({ ...form, motdepasse: e.target.value })}
+              required
+            />
 
             {errorMsg && (
               <div style={{ color: "#B3261E", fontSize: 13.5, marginTop: 10 }}>{errorMsg}</div>

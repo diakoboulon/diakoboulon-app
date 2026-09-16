@@ -4,18 +4,23 @@ import { useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import { signUpVendeur } from "@/lib/auth";
+import PasswordField from "@/components/PasswordField";
 
 export default function SellerPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [form, setForm] = useState({
-    boutique: "", ville: "", telephone: "", username: "", motdepasse: "", description: "",
+    boutique: "", ville: "", telephone: "", username: "", motdepasse: "", motdepasse2: "", description: "",
   });
 
   async function handleSubmit(e) {
     e.preventDefault();
     setErrorMsg("");
+    if (form.motdepasse !== form.motdepasse2) {
+      setErrorMsg("Les deux mots de passe ne sont pas identiques.");
+      return;
+    }
     setLoading(true);
     try {
       await signUpVendeur({
@@ -71,8 +76,10 @@ export default function SellerPage() {
             </div>
             <input className="field" placeholder="Nom d'utilisateur" required
               value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
-            <input className="field" type="password" placeholder="Mot de passe" required minLength={6}
+            <PasswordField variant="plain" placeholder="Mot de passe" required minLength={6}
               value={form.motdepasse} onChange={(e) => setForm({ ...form, motdepasse: e.target.value })} />
+            <PasswordField variant="plain" placeholder="Confirmer le mot de passe" required minLength={6}
+              value={form.motdepasse2} onChange={(e) => setForm({ ...form, motdepasse2: e.target.value })} />
 
             {errorMsg && (
               <div style={{ color: "#B3261E", fontSize: 13.5 }}>{errorMsg}</div>
