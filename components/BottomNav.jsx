@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "./CartProvider";
 import { useFavorites } from "./FavoritesProvider";
+import { getCurrentProfile } from "@/lib/auth";
 
 const TABS = [
   {
@@ -66,17 +68,28 @@ export default function BottomNav() {
   const pathname = usePathname();
   const { count } = useCart();
   const { favCount } = useFavorites();
+  const [profileHref, setProfileHref] = useState("/connexion");
+
+  useEffect(() => {
+    (async () => {
+      const p = await getCurrentProfile();
+      if (p?.role === "vendeur") setProfileHref("/vendre/tableau-de-bord");
+      else setProfileHref("/connexion");
+    })();
+  }, [pathname]);
 
   const hiddenOn = ["/connexion", "/inscription"];
   if (hiddenOn.some((p) => pathname.startsWith(p))) return null;
 
+  const tabs = TABS.map((t) => (t.href === "/connexion" ? { ...t, href: profileHref } : t));
+
   return (
     <nav className="bottom-nav">
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href.split("#")[0]) && tab.href !== "/";
         const badgeCount = tab.countFrom === "cart" ? count : tab.countFrom === "favorites" ? favCount : 0;
         return (
-          <Link key={tab.href} href={tab.href} className={"bn-item" + (active ? " active" : "")}>
+          <Link key={tab.label} href={tab.href} className={"bn-item" + (active ? " active" : "")}>
             <span className="bn-icon">
               {tab.icon}
               {badgeCount > 0 && <span className="bn-badge">{badgeCount}</span>}

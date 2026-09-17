@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import ProductThumb from "@/components/ProductThumb";
 import { formatFcfa } from "@/components/ProductCard";
-import { getCurrentProfile, getMyVendorProfile, signOut } from "@/lib/auth";
+import { getCurrentProfile, getMyVendorProfile, updateVendorProfile, signOut } from "@/lib/auth";
 import { addProduct, getVendorProducts, deleteProduct, MAX_IMAGES } from "@/lib/products";
 import { CATEGORY_LABELS } from "@/lib/data";
 
@@ -17,6 +17,11 @@ export default function TableauDeBordVendeur() {
   const [profile, setProfile] = useState(null);
   const [vendor, setVendor] = useState(null);
   const [products, setProducts] = useState([]);
+
+  const [editing, setEditing] = useState(false);
+  const [settingsForm, setSettingsForm] = useState({ boutique: "", ville: "", telephone: "", description: "" });
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsMsg, setSettingsMsg] = useState("");
 
   const [form, setForm] = useState({ name: "", cat: CAT_OPTIONS[0][0], price: "", description: "" });
   const [imageFiles, setImageFiles] = useState([]);
@@ -39,10 +44,28 @@ export default function TableauDeBordVendeur() {
       setProfile(p);
       const v = await getMyVendorProfile(p.id);
       setVendor(v);
-      if (v) await loadProducts(v.id);
+      if (v) {
+        setSettingsForm({ boutique: v.boutique || "", ville: v.ville || "", telephone: v.telephone || "", description: v.description || "" });
+        await loadProducts(v.id);
+      }
       setLoading(false);
     })();
   }, [router]);
+
+  async function handleSaveSettings(e) {
+    e.preventDefault();
+    setSettingsMsg("");
+    setSavingSettings(true);
+    try {
+      await updateVendorProfile(vendor.id, settingsForm);
+      setVendor({ ...vendor, ...settingsForm });
+      setEditing(false);
+    } catch (err) {
+      setSettingsMsg(err.message || "Impossible d'enregistrer, réessayez.");
+    } finally {
+      setSavingSettings(false);
+    }
+  }
 
   function handleImageChange(e) {
     const files = Array.from(e.target.files || []).slice(0, MAX_IMAGES);
@@ -119,9 +142,36 @@ export default function TableauDeBordVendeur() {
         )}
 
         <div className="card" style={{ marginTop: 24, padding: 18 }}>
-          <p><strong>Ville :</strong> {vendor?.ville}</p>
-          <p><strong>Téléphone :</strong> {vendor?.telephone}</p>
-          <p><strong>Description :</strong> {vendor?.description || "—"}</p>
+          {editing ? (
+            <form onSubmit={handleSaveSettings} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <input className="field" placeholder="Nom de la boutique" required
+                value={settingsForm.boutique} onChange={(e) => setSettingsForm({ ...settingsForm, boutique: e.target.value })} />
+              <input className="field" placeholder="Ville" required
+                value={settingsForm.ville} onChange={(e) => setSettingsForm({ ...settingsForm, ville: e.target.value })} />
+              <input className="field" placeholder="Téléphone Mobile Money" required
+                value={settingsForm.telephone} onChange={(e) => setSettingsForm({ ...settingsForm, telephone: e.target.value })} />
+              <textarea className="field" placeholder="Description" rows={3}
+                value={settingsForm.description} onChange={(e) => setSettingsForm({ ...settingsForm, description: e.target.value })} />
+              {settingsMsg && <div style={{ color: "#B3261E", fontSize: 13.5 }}>{settingsMsg}</div>}
+              <div style={{ display: "flex", gap: 10 }}>
+                <button className="btn btn-primary" type="submit" disabled={savingSettings}>
+                  {savingSettings ? "Enregistrement…" : "Enregistrer"}
+                </button>
+                <button type="button" className="btn" style={{ border: "1px solid var(--ligne)" }} onClick={() => setEditing(false)}>
+                  Annuler
+                </button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <p><strong>Ville :</strong> {vendor?.ville}</p>
+              <p><strong>Téléphone :</strong> {vendor?.telephone}</p>
+              <p><strong>Description :</strong> {vendor?.description || "—"}</p>
+              <button className="btn" style={{ border: "1px solid var(--ligne)", marginTop: 6 }} onClick={() => setEditing(true)}>
+                ✏️ Modifier ma boutique
+              </button>
+            </>
+          )}
         </div>
 
         <h2 style={{ fontSize: 19, marginTop: 30 }}>Ajouter un produit</h2>
