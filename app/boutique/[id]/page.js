@@ -4,6 +4,8 @@ import { getVendorInfo } from "@/lib/data";
 import { getVendorProducts } from "@/lib/products";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function BoutiquePage({ params }) {
   const vendor = await getVendorInfo(params.id);
   const products = vendor ? await getVendorProducts(vendor.id) : [];
