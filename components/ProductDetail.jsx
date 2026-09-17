@@ -56,7 +56,16 @@ export default function ProductDetail({ product }) {
             )}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ fontSize: 12.5, color: "var(--encre-soft)" }}>{product.vendor} · {product.city}</div>
+            <div style={{ fontSize: 12.5, color: "var(--encre-soft)" }}>
+              {product.vendor_id ? (
+                <Link href={`/boutique/${product.vendor_id}`} style={{ color: "var(--terre-fonce)", fontWeight: 600 }}>
+                  {product.vendor}
+                </Link>
+              ) : (
+                product.vendor
+              )}
+              {" "}· {product.city}
+            </div>
             <h1 style={{ margin: 0, fontSize: 26 }}>{product.name}</h1>
             <div className="stars">★★★★★ {product.rating} · {CATEGORY_LABELS[product.cat]}</div>
             <div style={{ fontFamily: "'Fraunces', serif", fontSize: 26, color: "var(--terre-fonce)", fontWeight: 600 }}>

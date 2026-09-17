@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Header from "@/components/Header";
 import ProductThumb from "@/components/ProductThumb";
 import { formatFcfa } from "@/components/ProductCard";
@@ -138,6 +139,14 @@ export default function TableauDeBordVendeur() {
         ) : (
           <div className="pay-chip" style={{ background: "var(--or)", color: "var(--encre)", display: "inline-block" }}>
             En attente de validation par l'équipe Diakoboulon
+          </div>
+        )}
+
+        {vendor && (
+          <div style={{ marginTop: 10 }}>
+            <Link href={`/boutique/${vendor.id}`} style={{ fontSize: 13.5, color: "var(--terre-fonce)", fontWeight: 600 }}>
+              👁️ Voir ma boutique publique
+            </Link>
           </div>
         )}
 
