@@ -48,15 +48,17 @@ export default function ConnexionPage() {
           <h1>Connexion</h1>
           <p className="login-sub">Accédez à votre espace</p>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} autoComplete="off">
             <label className="login-label">Identifiant</label>
             <div className="login-field">
               <span>👤</span>
               <input
                 type="text"
+                name="diakoboulon-identifiant"
                 placeholder="Nom d'utilisateur ou numéro de téléphone"
                 value={form.identifiant}
                 onChange={(e) => setForm({ ...form, identifiant: e.target.value })}
+                autoComplete="off"
                 required
               />
             </div>
@@ -64,8 +66,10 @@ export default function ConnexionPage() {
 
             <label className="login-label" style={{ marginTop: 16 }}>Mot de passe</label>
             <PasswordField
+              name="diakoboulon-motdepasse"
               value={form.motdepasse}
               onChange={(e) => setForm({ ...form, motdepasse: e.target.value })}
+              autoComplete="new-password"
               required
             />
 
