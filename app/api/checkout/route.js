@@ -38,7 +38,11 @@ export async function POST(request) {
       })
       .select()
       .single();
-    if (!error && order) orderId = order.id;
+    if (!error && order) {
+      orderId = order.id;
+    } else if (error) {
+      console.error("Erreur enregistrement commande Supabase :", error.message, error.details, error.hint);
+    }
   }
   const orderReference = orderId;
 
