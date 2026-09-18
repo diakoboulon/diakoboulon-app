@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 const SENEPAY_API_URL = "https://api.sene-pay.com/api/v1/checkout/sessions";
 
@@ -16,7 +17,30 @@ export async function POST(request) {
   const apiKey = process.env.SENEPAY_API_KEY;
   const apiSecret = process.env.SENEPAY_API_SECRET;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const orderReference = `DK-${Date.now()}`;
+
+  // Enregistre la commande dans la base (si Supabase est configuré) pour qu'on
+  // puisse la retrouver ensuite, quel que soit le mode de paiement choisi.
+  let orderId = `DK-${Date.now()}`;
+  if (supabaseAdmin) {
+    const { data: order, error } = await supabaseAdmin
+      .from("orders")
+      .insert({
+        client_id: body.clientId || null,
+        items: body.items.map((i) => ({
+          product_id: i.product?.id,
+          name: i.product?.name,
+          qty: i.qty,
+          price: i.product?.price,
+        })),
+        total: body.total,
+        payment_method: body.pay,
+        status: body.pay === "livraison" ? "en_preparation" : "en_attente_paiement",
+      })
+      .select()
+      .single();
+    if (!error && order) orderId = order.id;
+  }
+  const orderReference = orderId;
 
   // Mode démonstration : pas de clés SenePay configurées.
   if (!apiKey || !apiSecret) {

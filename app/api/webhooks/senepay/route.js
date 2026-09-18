@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 // Reçoit les notifications de paiement de SenePay (succès ou échec) et vérifie
 // leur authenticité via la signature HMAC-SHA256, comme recommandé dans leur
@@ -19,14 +20,19 @@ export async function POST(request) {
 
   const payload = JSON.parse(rawBody);
 
-  if (payload.event === "checkout.session.completed") {
-    // TODO: marquer la commande `payload.orderReference` comme payée dans Supabase
-    // (payload.netAmount contient le montant net reçu après commission SenePay).
+  if (payload.event === "checkout.session.completed" && supabaseAdmin) {
+    await supabaseAdmin
+      .from("orders")
+      .update({ status: "payee" })
+      .eq("id", payload.orderReference);
     console.log("Paiement confirmé :", payload.orderReference, payload.netAmount);
   }
 
-  if (payload.event === "checkout.session.failed") {
-    // TODO: marquer la commande comme échouée, notifier le client si besoin.
+  if (payload.event === "checkout.session.failed" && supabaseAdmin) {
+    await supabaseAdmin
+      .from("orders")
+      .update({ status: "paiement_echoue" })
+      .eq("id", payload.orderReference);
     console.log("Paiement échoué :", payload.orderReference);
   }
 

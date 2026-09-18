@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { useCart } from "@/components/CartProvider";
 import { formatFcfa } from "@/components/ProductCard";
 import { getProducts } from "@/lib/data";
+import { getCurrentProfile } from "@/lib/auth";
 import Link from "next/link";
 
 const PAY_OPTIONS = [
@@ -17,12 +18,14 @@ const LIVRAISON = 1000;
 export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
   const [products, setProducts] = useState([]);
+  const [clientId, setClientId] = useState(null);
   const [pay, setPay] = useState("mobile_money");
   const [confirmed, setConfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getProducts().then(setProducts);
+    getCurrentProfile().then((p) => setClientId(p?.id || null));
   }, []);
 
   const ids = Object.keys(cart);
@@ -37,7 +40,7 @@ export default function CheckoutPage() {
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items, total, pay }),
+      body: JSON.stringify({ items, total, pay, clientId }),
     });
     const data = await res.json();
     setLoading(false);
