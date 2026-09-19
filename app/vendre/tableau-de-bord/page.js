@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 import ProductThumb from "@/components/ProductThumb";
 import { formatFcfa } from "@/components/ProductCard";
 import { getCurrentProfile, getMyVendorProfile, updateVendorProfile, signOut } from "@/lib/auth";
-import { addProduct, getVendorProducts, deleteProduct, MAX_IMAGES } from "@/lib/products";
+import { addProduct, getVendorProducts, deleteProduct, updateProduct, MAX_IMAGES } from "@/lib/products";
 import { CATEGORY_LABELS } from "@/lib/data";
 
 const CAT_OPTIONS = Object.entries(CATEGORY_LABELS);
@@ -29,6 +29,10 @@ export default function TableauDeBordVendeur() {
   const [imagePreviews, setImagePreviews] = useState([]);
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [editProductForm, setEditProductForm] = useState({ name: "", cat: "", price: "", description: "" });
+  const [savingProduct, setSavingProduct] = useState(false);
 
   async function loadProducts(vendorId) {
     const list = await getVendorProducts(vendorId);
@@ -109,6 +113,25 @@ export default function TableauDeBordVendeur() {
   async function handleDelete(id) {
     await deleteProduct(id);
     await loadProducts(vendor.id);
+  }
+
+  function startEditProduct(p) {
+    setEditingProductId(p.id);
+    setEditProductForm({ name: p.name, cat: p.cat, price: p.price, description: p.description || "" });
+  }
+
+  async function handleSaveProduct(e) {
+    e.preventDefault();
+    setSavingProduct(true);
+    try {
+      await updateProduct(editingProductId, editProductForm);
+      setEditingProductId(null);
+      await loadProducts(vendor.id);
+    } catch (err) {
+      alert(err.message || "Impossible d'enregistrer les modifications.");
+    } finally {
+      setSavingProduct(false);
+    }
   }
 
   async function handleLogout() {
@@ -226,18 +249,45 @@ export default function TableauDeBordVendeur() {
           <p style={{ color: "var(--encre-soft)", fontSize: 14 }}>Vous n'avez pas encore ajouté de produit.</p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
-            {products.map((p) => (
-              <div key={p.id} className="card" style={{ display: "flex", alignItems: "center", gap: 12, padding: 10 }}>
-                <ProductThumb product={p} style={{ width: 56, height: 56, borderRadius: 10, flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>{p.name}</div>
-                  <div style={{ fontSize: 13, color: "var(--encre-soft)" }}>{formatFcfa(p.price)}</div>
+            {products.map((p) =>
+              editingProductId === p.id ? (
+                <form key={p.id} onSubmit={handleSaveProduct} className="card" style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+                  <input className="field" placeholder="Nom du produit" required
+                    value={editProductForm.name} onChange={(e) => setEditProductForm({ ...editProductForm, name: e.target.value })} />
+                  <select className="field" value={editProductForm.cat} onChange={(e) => setEditProductForm({ ...editProductForm, cat: e.target.value })}>
+                    {CAT_OPTIONS.map(([id, label]) => (
+                      <option key={id} value={id}>{label}</option>
+                    ))}
+                  </select>
+                  <input className="field" type="number" min="0" placeholder="Prix en FCFA" required
+                    value={editProductForm.price} onChange={(e) => setEditProductForm({ ...editProductForm, price: e.target.value })} />
+                  <textarea className="field" placeholder="Description" rows={3}
+                    value={editProductForm.description} onChange={(e) => setEditProductForm({ ...editProductForm, description: e.target.value })} />
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <button className="btn btn-primary" type="submit" disabled={savingProduct}>
+                      {savingProduct ? "Enregistrement…" : "Enregistrer"}
+                    </button>
+                    <button type="button" className="btn" style={{ border: "1px solid var(--ligne)" }} onClick={() => setEditingProductId(null)}>
+                      Annuler
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div key={p.id} className="card" style={{ display: "flex", alignItems: "center", gap: 12, padding: 10 }}>
+                  <ProductThumb product={p} style={{ width: 56, height: 56, borderRadius: 10, flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>{p.name}</div>
+                    <div style={{ fontSize: 13, color: "var(--encre-soft)" }}>{formatFcfa(p.price)}</div>
+                  </div>
+                  <button className="btn" style={{ border: "1px solid var(--ligne)", fontSize: 12.5, padding: "8px 12px" }} onClick={() => startEditProduct(p)}>
+                    Modifier
+                  </button>
+                  <button className="btn" style={{ border: "1px solid var(--ligne)", fontSize: 12.5, padding: "8px 12px" }} onClick={() => handleDelete(p.id)}>
+                    Supprimer
+                  </button>
                 </div>
-                <button className="btn" style={{ border: "1px solid var(--ligne)", fontSize: 12.5, padding: "8px 12px" }} onClick={() => handleDelete(p.id)}>
-                  Supprimer
-                </button>
-              </div>
-            ))}
+              )
+            )}
           </div>
         )}
 
