@@ -28,12 +28,16 @@ export default async function BoutiquePage({ params }) {
         <Link href="/" style={{ fontSize: 13, color: "var(--encre-soft)" }}>← Retour au catalogue</Link>
 
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 14 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: 14, background: "var(--vert)", color: "#fff",
-            display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 20, flexShrink: 0,
-          }}>
-            {vendor.boutique?.[0]?.toUpperCase() || "B"}
-          </div>
+          {vendor.logo_url ? (
+            <img src={vendor.logo_url} alt={vendor.boutique} style={{ width: 56, height: 56, borderRadius: 14, objectFit: "cover", flexShrink: 0 }} />
+          ) : (
+            <div style={{
+              width: 56, height: 56, borderRadius: 14, background: "var(--vert)", color: "#fff",
+              display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 20, flexShrink: 0,
+            }}>
+              {vendor.boutique?.[0]?.toUpperCase() || "B"}
+            </div>
+          )}
           <div>
             <h1 style={{ fontSize: 20, margin: 0 }}>{vendor.boutique}</h1>
             <p style={{ margin: "2px 0 0", color: "var(--encre-soft)", fontSize: 13.5 }}>{vendor.ville}</p>

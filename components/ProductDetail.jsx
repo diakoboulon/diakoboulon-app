@@ -12,13 +12,36 @@ export default function ProductDetail({ product }) {
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [vendorPhone, setVendorPhone] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [canNativeShare, setCanNativeShare] = useState(false);
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.share) setCanNativeShare(true);
+  }, []);
 
   useEffect(() => {
     if (product?.vendor_id) {
       getVendorInfo(product.vendor_id).then((v) => setVendorPhone(v?.telephone || null));
     }
   }, [product?.vendor_id]);
+
+  const shareUrl = product ? `${process.env.NEXT_PUBLIC_SITE_URL || ""}/produit/${product.id}` : "";
+  const shareText = product ? `Regarde "${product.name}" sur Diakoboulon` : "";
+
+  async function handleNativeShare() {
+    try {
+      await navigator.share({ title: shareText, url: shareUrl });
+    } catch {
+      // partage annulé par la personne, rien à faire
+    }
+  }
+
+  function handleCopyLink() {
+    navigator.clipboard?.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
 
   if (!product) {
     return (
@@ -101,6 +124,37 @@ export default function ProductDetail({ product }) {
                 💬 Contacter {product.vendor}
               </button>
             )}
+
+            <div style={{ marginTop: 8 }}>
+              <div style={{ fontSize: 12.5, color: "var(--encre-soft)", marginBottom: 8 }}>Partager ce produit</div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {canNativeShare && (
+                  <button className="icon-btn" style={{ border: "1px solid var(--ligne)" }} onClick={handleNativeShare} aria-label="Partager">
+                    📤
+                  </button>
+                )}
+                <a
+                  className="icon-btn" style={{ border: "1px solid var(--ligne)" }}
+                  href={`https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`}
+                  target="_blank" rel="noopener noreferrer" aria-label="Partager sur WhatsApp"
+                >
+                  💬
+                </a>
+                <a
+                  className="icon-btn" style={{ border: "1px solid var(--ligne)" }}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+                  target="_blank" rel="noopener noreferrer" aria-label="Partager sur Facebook"
+                >
+                  📘
+                </a>
+                <button className="icon-btn" style={{ border: "1px solid var(--ligne)" }} onClick={handleCopyLink} aria-label="Copier le lien">
+                  {copied ? "✓" : "🔗"}
+                </button>
+              </div>
+              <div style={{ fontSize: 11.5, color: "var(--encre-soft)", marginTop: 6 }}>
+                Pour TikTok : copie le lien 🔗 et colle-le dans ta légende ou ta bio.
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import ProductThumb from "@/components/ProductThumb";
 import { formatFcfa } from "@/components/ProductCard";
-import { getCurrentProfile, getMyVendorProfile, updateVendorProfile, signOut } from "@/lib/auth";
+import { getCurrentProfile, getMyVendorProfile, updateVendorProfile, updateVendorLogo, signOut } from "@/lib/auth";
 import { addProduct, getVendorProducts, deleteProduct, updateProduct, MAX_IMAGES } from "@/lib/products";
 import { CATEGORY_LABELS } from "@/lib/data";
 
@@ -23,6 +23,7 @@ export default function TableauDeBordVendeur() {
   const [settingsForm, setSettingsForm] = useState({ boutique: "", ville: "", telephone: "", description: "" });
   const [savingSettings, setSavingSettings] = useState(false);
   const [settingsMsg, setSettingsMsg] = useState("");
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const [form, setForm] = useState({ name: "", cat: CAT_OPTIONS[0][0], price: "", description: "" });
   const [imageFiles, setImageFiles] = useState([]);
@@ -69,6 +70,20 @@ export default function TableauDeBordVendeur() {
       setSettingsMsg(err.message || "Impossible d'enregistrer, réessayez.");
     } finally {
       setSavingSettings(false);
+    }
+  }
+
+  async function handleLogoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    try {
+      const url = await updateVendorLogo(vendor.id, file);
+      setVendor((v) => ({ ...v, logo_url: url }));
+    } catch (err) {
+      alert(err.message || "Impossible d'envoyer la photo.");
+    } finally {
+      setUploadingLogo(false);
     }
   }
 
@@ -152,8 +167,25 @@ export default function TableauDeBordVendeur() {
     <>
       <Header showSearch={false} />
       <div className="app" style={{ padding: "30px 0 60px", maxWidth: 520 }}>
-        <h1 style={{ fontSize: 24, marginBottom: 4 }}>{vendor?.boutique || profile?.nom}</h1>
-        <p style={{ color: "var(--encre-soft)", marginTop: 0 }}>Espace vendeur</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <label style={{ position: "relative", cursor: "pointer", flexShrink: 0 }}>
+            {vendor?.logo_url ? (
+              <img src={vendor.logo_url} alt="Photo de profil" style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover" }} />
+            ) : (
+              <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--vert)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 24 }}>
+                {vendor?.boutique?.[0]?.toUpperCase() || "B"}
+              </div>
+            )}
+            <span style={{ position: "absolute", bottom: 0, right: 0, background: "var(--or)", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, border: "2px solid #fff" }}>
+              {uploadingLogo ? "…" : "✏️"}
+            </span>
+            <input type="file" accept="image/*" onChange={handleLogoChange} style={{ display: "none" }} disabled={uploadingLogo} />
+          </label>
+          <div>
+            <h1 style={{ fontSize: 24, marginBottom: 4 }}>{vendor?.boutique || profile?.nom}</h1>
+            <p style={{ color: "var(--encre-soft)", marginTop: 0 }}>Espace vendeur</p>
+          </div>
+        </div>
 
         {vendor?.verifie ? (
           <div className="pay-chip" style={{ background: "var(--vert)", color: "#fff", display: "inline-block" }}>
