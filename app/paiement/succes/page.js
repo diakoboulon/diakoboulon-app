@@ -9,7 +9,6 @@ import Link from "next/link";
 function SuccesContent() {
   const params = useSearchParams();
   const ref = params.get("ref");
-  const debug = params.get("debug");
   const { clearCart } = useCart();
 
   useEffect(() => {
@@ -24,11 +23,6 @@ function SuccesContent() {
       <p style={{ color: "var(--encre-soft)" }}>
         {ref ? `Commande ${ref} reçue. ` : ""}Vous recevrez une notification à chaque étape de la livraison.
       </p>
-      {debug && (
-        <p style={{ color: "#B3261E", fontSize: 12.5, textAlign: "left", background: "#FBEAEA", padding: 10, borderRadius: 8, marginTop: 16 }}>
-          Diagnostic (temporaire) : {debug}
-        </p>
-      )}
       <Link href="/" className="btn btn-primary">Retour à la boutique</Link>
     </div>
   );
