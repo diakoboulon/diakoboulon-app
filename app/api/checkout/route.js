@@ -21,6 +21,7 @@ export async function POST(request) {
   // Enregistre la commande dans la base (si Supabase est configuré) pour qu'on
   // puisse la retrouver ensuite, quel que soit le mode de paiement choisi.
   let orderId = `DK-${Date.now()}`;
+  let debugError = null;
   if (supabaseAdmin) {
     const { data: order, error } = await supabaseAdmin
       .from("orders")
@@ -42,20 +43,23 @@ export async function POST(request) {
       orderId = order.id;
     } else if (error) {
       console.error("Erreur enregistrement commande Supabase :", error.message, error.details, error.hint);
+      debugError = error.message;
     }
+  } else {
+    debugError = "supabaseAdmin non initialisé (clé service manquante ou URL manquante).";
   }
   const orderReference = orderId;
 
   // Mode démonstration : pas de clés SenePay configurées.
   if (!apiKey || !apiSecret) {
     console.log("SenePay non configuré — commande simulée :", body);
-    return NextResponse.json({ ok: true, simulated: true, orderId: orderReference });
+    return NextResponse.json({ ok: true, simulated: true, orderId: orderReference, debugError });
   }
 
   // Paiement à la livraison : pas besoin de passer par SenePay, on confirme directement.
   if (body.pay === "livraison") {
     console.log("Commande à payer à la livraison :", orderReference, body);
-    return NextResponse.json({ ok: true, simulated: true, orderId: orderReference });
+    return NextResponse.json({ ok: true, simulated: true, orderId: orderReference, debugError });
   }
 
   try {
@@ -72,7 +76,7 @@ export async function POST(request) {
         orderReference,
         description: `Commande Diakoboulon ${orderReference}`,
         country: "ML", // Mali — enlevez cette ligne pour laisser le client choisir son pays
-        returnUrl: `${siteUrl}/paiement/succes?ref=${orderReference}`,
+        returnUrl: `${siteUrl}/paiement/succes?ref=${orderReference}${debugError ? `&debug=${encodeURIComponent(debugError)}` : ""}`,
         cancelUrl: `${siteUrl}/paiement/annule`,
         webhookUrl: `${siteUrl}/api/webhooks/senepay`,
         metadata: { orderReference },
@@ -90,7 +94,7 @@ export async function POST(request) {
     }
 
     // Le client doit être redirigé vers data.checkoutUrl pour payer.
-    return NextResponse.json({ ok: true, checkoutUrl: data.checkoutUrl, orderId: orderReference });
+    return NextResponse.json({ ok: true, checkoutUrl: data.checkoutUrl, orderId: orderReference, debugError });
   } catch (err) {
     console.error("Erreur réseau SenePay :", err);
     return NextResponse.json({ ok: false, error: "Impossible de contacter SenePay." }, { status: 500 });
