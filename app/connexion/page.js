@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -14,12 +14,25 @@ export default function ConnexionPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  useEffect(() => {
+    const saved = localStorage.getItem("diakoboulon-identifiant");
+    if (saved) {
+      setForm((f) => ({ ...f, identifiant: saved }));
+      setRemember(true);
+    }
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setErrorMsg("");
     setLoading(true);
     try {
       const { profile } = await signIn({ identifiant: form.identifiant, password: form.motdepasse });
+      if (remember) {
+        localStorage.setItem("diakoboulon-identifiant", form.identifiant);
+      } else {
+        localStorage.removeItem("diakoboulon-identifiant");
+      }
       if (profile?.role === "vendeur") {
         router.push("/vendre/tableau-de-bord");
       } else {

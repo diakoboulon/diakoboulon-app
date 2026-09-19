@@ -1,20 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "./CartProvider";
-
-const MENU_LINKS = [
-  { href: "/", label: "Accueil" },
-  { href: "/vendre", label: "Devenir vendeur" },
-  { href: "/panier", label: "Mon panier" },
-  { href: "/connexion", label: "Connexion" },
-];
+import { getCurrentProfile, signOut } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 export default function Header({ search, onSearch, showSearch = true }) {
   const { count } = useCart();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    if (menuOpen) getCurrentProfile().then(setProfile);
+  }, [menuOpen]);
+
+  async function handleLogout() {
+    await signOut();
+    setMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  }
+
+  const menuLinks = [
+    { href: "/", label: "Accueil" },
+    { href: "/vendre", label: profile?.role === "vendeur" ? "Ma boutique" : "Devenir vendeur",
+      to: profile?.role === "vendeur" ? "/vendre/tableau-de-bord" : "/vendre" },
+    { href: "/panier", label: "Mon panier" },
+    { href: "/favoris", label: "Mes favoris" },
+  ];
 
   return (
     <header>
@@ -60,11 +76,20 @@ export default function Header({ search, onSearch, showSearch = true }) {
 
       {menuOpen && (
         <div className="mobile-menu">
-          {MENU_LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="mobile-menu-link" onClick={() => setMenuOpen(false)}>
+          {menuLinks.map((l) => (
+            <Link key={l.href} href={l.to || l.href} className="mobile-menu-link" onClick={() => setMenuOpen(false)}>
               {l.label}
             </Link>
           ))}
+          {profile ? (
+            <button className="mobile-menu-link" style={{ textAlign: "left", background: "none", border: "none", width: "100%" }} onClick={handleLogout}>
+              Se déconnecter {profile.nom ? `(${profile.nom})` : ""}
+            </button>
+          ) : (
+            <Link href="/connexion" className="mobile-menu-link" onClick={() => setMenuOpen(false)}>
+              Connexion
+            </Link>
+          )}
         </div>
       )}
 
