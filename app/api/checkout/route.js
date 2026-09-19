@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 const SENEPAY_API_URL = "https://api.sene-pay.com/api/v1/checkout/sessions";
+const COMMISSION_RATE = 0.05; // 5% de commission Diakoboulon sur chaque vente
 
 // Crée une session de paiement SenePay (Orange Money, Moov Africa, Wave...)
 // et renvoie l'URL de la page de paiement hébergée vers laquelle rediriger
@@ -18,6 +19,9 @@ export async function POST(request) {
   const apiSecret = process.env.SENEPAY_API_SECRET;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
+  const commission = Math.round(body.total * COMMISSION_RATE);
+  const vendorPayout = body.total - commission;
+
   // Enregistre la commande dans la base (si Supabase est configuré) pour qu'on
   // puisse la retrouver ensuite, quel que soit le mode de paiement choisi.
   let orderId = `DK-${Date.now()}`;
@@ -28,11 +32,14 @@ export async function POST(request) {
         client_id: body.clientId || null,
         items: body.items.map((i) => ({
           product_id: i.product?.id,
+          vendor_id: i.product?.vendor_id || null,
           name: i.product?.name,
           qty: i.qty,
           price: i.product?.price,
         })),
         total: body.total,
+        commission,
+        vendor_payout: vendorPayout,
         payment_method: body.pay,
         status: body.pay === "livraison" ? "en_preparation" : "en_attente_paiement",
       })

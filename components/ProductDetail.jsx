@@ -1,17 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./Header";
 import { useCart } from "./CartProvider";
 import { formatFcfa } from "./ProductCard";
-import { CATEGORY_LABELS } from "@/lib/data";
+import { CATEGORY_LABELS, getVendorInfo } from "@/lib/data";
 import Link from "next/link";
 import ProductThumb from "./ProductThumb";
 
 export default function ProductDetail({ product }) {
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
+  const [vendorPhone, setVendorPhone] = useState(null);
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    if (product?.vendor_id) {
+      getVendorInfo(product.vendor_id).then((v) => setVendorPhone(v?.telephone || null));
+    }
+  }, [product?.vendor_id]);
 
   if (!product) {
     return (
@@ -80,12 +87,20 @@ export default function ProductDetail({ product }) {
             <button className="btn btn-primary" onClick={() => addToCart(product.id, qty)}>
               Ajouter au panier
             </button>
-            <button
-              className="btn btn-ghost"
-              onClick={() => alert(`Message envoyé à ${product.vendor} (la messagerie complète arrive bientôt).`)}
-            >
-              ✉️ Contacter {product.vendor}
-            </button>
+            {vendorPhone ? (
+              <a
+                className="btn btn-ghost"
+                href={`https://wa.me/${vendorPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par "${product.name}" sur Diakoboulon.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                💬 Contacter {product.vendor} sur WhatsApp
+              </a>
+            ) : (
+              <button className="btn btn-ghost" disabled>
+                💬 Contacter {product.vendor}
+              </button>
+            )}
           </div>
         </div>
       </div>
