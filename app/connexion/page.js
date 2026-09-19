@@ -82,7 +82,16 @@ export default function ConnexionPage() {
                 <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
                 Se souvenir de moi
               </label>
-              <a href="#" className="login-link">Mot de passe oublié ?</a>
+              <a
+                href="#"
+                className="login-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert("Pour réinitialiser votre mot de passe, contactez l'équipe Diakoboulon avec votre identifiant (numéro de téléphone ou nom d'utilisateur). Nous vous aiderons à en définir un nouveau.");
+                }}
+              >
+                Mot de passe oublié ?
+              </a>
             </div>
 
             <button type="submit" className="login-btn" disabled={loading}>

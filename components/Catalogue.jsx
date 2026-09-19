@@ -55,6 +55,35 @@ const CATS = [
       </svg>
     ),
   },
+  {
+    id: "bien_etre",
+    label: "Bien-être",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z" />
+      </svg>
+    ),
+  },
+  {
+    id: "accessoires",
+    label: "Accessoires",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="8" cy="8" r="5" />
+        <circle cx="16" cy="16" r="5" />
+      </svg>
+    ),
+  },
+  {
+    id: "mobilier",
+    label: "Mobilier",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 13V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6" />
+        <path d="M4 13h16v6a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6Z" />
+      </svg>
+    ),
+  },
 ];
 
 export default function Catalogue({ products }) {
